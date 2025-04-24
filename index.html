@@ -56,9 +56,6 @@
     <label>Total de XP Boosts (1 hora cada):</label>
     <input type="number" id="xpBoosts" value="4" step="1">
 
-    <label>Horas com stamina (verdes):</label>
-    <input type="number" id="horasStamina" value="3" step="1">
-
     <label>Horas totais da hunt:</label>
     <input type="number" id="horasTotais" value="4" step="1">
 
@@ -73,25 +70,28 @@
       const precoTC = parseFloat(document.getElementById('precoTC').value) * 1000;
       const staminaExt = parseFloat(document.getElementById('staminaExt').value) * 1000000;
       const xpBoosts = parseInt(document.getElementById('xpBoosts').value);
-      const horasStamina = parseInt(document.getElementById('horasStamina').value);
       const horasTotais = parseInt(document.getElementById('horasTotais').value);
 
       const bonusAditivo = 1 + 1.0 + 0.4; // Double XP + Prayer
       const boostAditivo = 0.5;
       const multiplicadorStamina = 1.5;
 
+      // Cálculo de quantas horas precisam de Stamina Extension
+      const horasGratuitasStamina = 3;
+      const horasComStaminaExt = Math.max(0, horasTotais - horasGratuitasStamina);
+
       // Cenário A: Stamina Extension, sem XP Boost
       const xpHoraA = xpBase * bonusAditivo * multiplicadorStamina;
       const xpTotalA = xpHoraA * horasTotais;
-      const custoA = staminaExt;
+      const custoA = horasComStaminaExt * staminaExt;
       const custoPorXpA = custoA / xpTotalA * 1000000;
 
-      // Cenário B: XP Boosts, algumas horas sem stamina
+      // Cenário B: XP Boosts, 3h com Stamina, resto sem
       let xpTotalB = 0;
       for (let i = 0; i < horasTotais; i++) {
         const boost = xpBoosts > i ? boostAditivo : 0;
         const aditivo = bonusAditivo + boost;
-        const multi = i < horasStamina ? multiplicadorStamina : 1.0;
+        const multi = i < horasGratuitasStamina ? multiplicadorStamina : 1.0;
         xpTotalB += xpBase * aditivo * multi;
       }
       const custoB = xpBoosts * precoTC;
